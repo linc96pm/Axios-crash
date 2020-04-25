@@ -1,6 +1,6 @@
 // AXIOS GLOBALS
-axios.defaults.headers.common['X-Auth-Token'] =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+axios.defaults.headers.common['X-Auth-Token'] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+
 
 // GET REQUEST
 function getTodos() {
@@ -12,14 +12,12 @@ function getTodos() {
   //   }
   // })
   //   .then(res => showOutput(res))
-  //   .catch(err => console.error(err));
+  //   .catch(err => console.log(err));
 
   axios
-    .get('https://jsonplaceholder.typicode.com/todos?_limit=5', {
-      timeout: 5000
-    })
+    .get('https://jsonplaceholder.typicode.com/todos?_limit=5', { timeout: 5000 })
     .then(res => showOutput(res))
-    .catch(err => console.error(err));
+    .catch(err => console.log(err));
 }
 
 // POST REQUEST
@@ -30,7 +28,7 @@ function addTodo() {
       completed: false
     })
     .then(res => showOutput(res))
-    .catch(err => console.error(err));
+    .catch(err => console.log(err));
 }
 
 // PUT/PATCH REQUEST
@@ -41,7 +39,7 @@ function updateTodo() {
       completed: true
     })
     .then(res => showOutput(res))
-    .catch(err => console.error(err));
+    .catch(err => console.log(err));
 }
 
 // DELETE REQUEST
@@ -49,18 +47,17 @@ function removeTodo() {
   axios
     .delete('https://jsonplaceholder.typicode.com/todos/1')
     .then(res => showOutput(res))
-    .catch(err => console.error(err));
+    .catch(err => console.log(err));
 }
 
 // SIMULTANEOUS DATA
 function getData() {
-  axios
-    .all([
-      axios.get('https://jsonplaceholder.typicode.com/todos?_limit=5'),
-      axios.get('https://jsonplaceholder.typicode.com/posts?_limit=5')
-    ])
+  axios.all([
+    axios.get('https://jsonplaceholder.typicode.com/todos?_limit=5'),
+    axios.get('https://jsonplaceholder.typicode.com/posts?_limit=5')
+  ])
     .then(axios.spread((todos, posts) => showOutput(posts)))
-    .catch(err => console.error(err));
+    .catch(err => console.log(err));
 }
 
 // CUSTOM HEADERS
@@ -70,7 +67,7 @@ function customHeaders() {
       'Content-Type': 'application/json',
       Authorization: 'sometoken'
     }
-  };
+  }
 
   axios
     .post(
@@ -82,7 +79,7 @@ function customHeaders() {
       config
     )
     .then(res => showOutput(res))
-    .catch(err => console.error(err));
+    .catch(err => console.log(err));
 }
 
 // TRANSFORMING REQUESTS & RESPONSES
@@ -99,7 +96,9 @@ function transformResponse() {
     })
   };
 
-  axios(options).then(res => showOutput(res));
+  axios(options)
+    .then(res => showOutput(res))
+    .catch(err => console.log(err));
 }
 
 // ERROR HANDLING
@@ -120,12 +119,12 @@ function errorHandling() {
 
         if (err.response.status === 404) {
           alert('Error: Page Not Found');
+        } else if (err.request) {
+          // Request was made but no response
+          console.error(err.request);
+        } else {
+          console.error(err.message);
         }
-      } else if (err.request) {
-        // Request was made but no response
-        console.error(err.request);
-      } else {
-        console.error(err.message);
       }
     });
 }
@@ -146,31 +145,27 @@ function cancelToken() {
     });
 
   if (true) {
-    source.cancel('Request canceled!');
+    source.cancel('Request canceled');
   }
 }
 
 // INTERCEPTING REQUESTS & RESPONSES
-axios.interceptors.request.use(
-  config => {
-    console.log(
-      `${config.method.toUpperCase()} request sent to ${
-        config.url
-      } at ${new Date().getTime()}`
-    );
+axios.interceptors.request.use(config => {
+  console.log(`${config.method.toUpperCase()} request sent to ${config.url} at ${new Date()
+    .getTime()}`);
 
-    return config;
-  },
-  error => {
-    return Promise.reject(error);
-  }
+  return config;
+}, error => {
+  return Promise.reject(error);
+}
 );
 
-// AXIOS INSTANCE
+// AXIOS INSTANCES
 const axiosInstance = axios.create({
   // Other custom settings
   baseURL: 'https://jsonplaceholder.typicode.com'
 });
+
 // axiosInstance.get('/comments').then(res => showOutput(res));
 
 // Show output in browser
